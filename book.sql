@@ -1,4 +1,4 @@
-/* step 1.1.8 - Create table */
+/* Create table */
 CREATE TABLE book(
     book_id INT PRIMARY KEY AUTO_INCREMENT,
     title VARCHAR(50),
@@ -8,12 +8,12 @@ CREATE TABLE book(
 );
 
 
-/* step 1.1.9 - Fill attributes */
+/* Fill attributes */
 INSERT INTO book(title, author, price, amount)
 VALUES ('Мастер и Маргарита', 'Булгаков М.А.', 670.99, 3)
 
 
-/* step 1.1.10 - Fill more attributes */
+/* Fill more attributes */
 INSERT INTO book(title, author, price, amount) VALUES 
 ('Белая гвардия', 'Булгаков М.А.', 540.50, 5),
 ('Идиот', 'Достоевский Ф.М.', 460.00, 10),
@@ -37,13 +37,16 @@ SELECT title, amount, 1.65 * amount AS pack FROM book
 /* Create column with ROUND */
 SELECT title, author, amount, ROUND((0.7 * price), 2) AS new_price FROM book
 
+
 /* Create column with ROUND and 2 IF conditions */
 SELECT author, title, 
 ROUND(IF(author='Есенин С.А.', price*1.05, IF(author='Булгаков М.А.', price*1.1, price)), 2) AS new_price 
 FROM book
 
+
 /* Using WHERE condition */
 SELECT author, title, price FROM book WHERE amount < 10
+
 
 /* Using WHERE condition with AND, OR operators*/
 SELECT title, author, price, amount 
@@ -131,19 +134,15 @@ FROM book
 WHERE price < (SELECT avg(price) FROM book)
 ORDER BY price DESC
 
-
 SELECT author, title, amount FROM book
 WHERE price IN (SELECT count(amount) = 1 FROM book));
-
 
 SELECT author, title, amount FROM book
 WHERE amount IN (SELECT amount FROM book GROUP BY amount HAVING count(amount) = 1)
 
-
 SELECT author, title, price FROM book
 WHERE price < ANY (SELECT min(price) FROM book
 GROUP BY author);
-
 
 SELECT title, author, amount, (SELECT max(amount) FROM book) - amount 'Заказ' 
 FROM book
