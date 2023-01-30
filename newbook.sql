@@ -65,3 +65,48 @@ FROM supply
 JOIN book USING(title, price)
 JOIN author USING(author_id)
 GROUP BY author.name_author, book.title;
+
+
+UPDATE book
+JOIN author USING(author_id)
+JOIN supply ON author.name_author = supply.author and book.title = supply.title
+SET book.amount = book.amount + supply.amount,
+    supply.amount = 0,
+    book.price = (book.price * book.amount + supply.price * supply.amount)/(book.amount + supply.amount)
+WHERE book.price != supply.price;
+
+
+INSERT INTO author (name_author)
+SELECT supply.author
+FROM author
+RIGHT JOIN supply on author.name_author = supply.author
+WHERE name_author IS Null;
+
+
+INSERT INTO book (title, author_id, price, amount)
+SELECT title, author_id, price, amount
+FROM
+    author
+    INNER JOIN supply ON author.name_author = supply.author
+WHERE amount != 0;
+
+
+UPDATE book
+SET genre_id =
+(SELECT genre_id FROM genre WHERE name_genre = "Поэзия")
+WHERE book_id = 10;
+
+
+DELETE FROM genre
+WHERE genre_id IN
+(SELECT genre_id FROM book GROUP BY genre_id HAVING count(*) < 4);
+
+
+DELETE FROM author
+USING author
+JOIN book USING(author_id)
+JOIN genre USING(genre_id)
+WHERE name_genre = 'Поэзия';
+
+
+

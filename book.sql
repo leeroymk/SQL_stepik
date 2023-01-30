@@ -148,4 +148,8 @@ GROUP BY author);
 
 SELECT title, author, amount, (SELECT max(amount) FROM book) - amount 'Заказ' 
 FROM book
-WHERE amount != (SELECT max(amount) FROM book)
+WHERE amount != (SELECT max(amount) FROM book);
+
+DELETE FROM author
+WHERE author_id IN
+(SELECT author_id FROM book GROUP BY author_id HAVING SUM(amount) < 20);
