@@ -60,3 +60,52 @@ JOIN buy USING(buy_id)
 JOIN client USING(client_id)
 WHERE author.name_author LIKE 'Достоевский%'
 ORDER BY 1;
+
+
+SELECT name_genre, sum(buy_book.amount) Количество FROM genre
+JOIN book USING(genre_id)
+JOIN buy_book USING(book_id)
+GROUP BY name_genre
+HAVING Количество =
+(SELECT max(amount_genre) max_amount_genre FROM
+(SELECT sum(buy_book.amount) amount_genre FROM genre
+JOIN book USING(genre_id)
+JOIN buy_book USING(book_id)
+GROUP BY name_genre) query_genre);
+
+
+SELECT YEAR(date_step_end) Год,
+MONTHNAME(date_step_end) Месяц,
+sum(book.price * buy_book.amount) as Сумма FROM
+buy_book JOIN buy_step USING(buy_id)
+JOIN book USING(book_id)
+JOIN step USING(step_id)
+WHERE name_step = 'Оплата' AND date_step_end
+GROUP BY Месяц, Год
+UNION
+SELECT YEAR(date_payment) Год,
+MONTHNAME(date_payment) Месяц,
+sum(price * amount) as Сумма FROM
+buy_archive
+GROUP BY Месяц, Год
+ORDER BY Месяц, Год;
+
+
+SELECT title, sum(Количество) Количество, sum(Сумма) Сумма FROM
+(SELECT book_id,
+sum(buy_book.amount) Количество,
+sum(buy_book.amount * book.price) Сумма
+FROM book
+JOIN buy_book USING(book_id)
+JOIN buy_step USING(buy_id)
+JOIN step USING(step_id)
+WHERE name_step = 'Оплата' AND date_step_end
+GROUP BY book_id
+UNION ALL
+SELECT book_id, sum(amount) Количество,
+sum(amount * price) Сумма
+FROM buy_archive
+GROUP BY book_id) query_1
+JOIN book USING(book_id)
+GROUP BY book_id
+ORDER BY Сумма DESC
