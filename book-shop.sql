@@ -32,3 +32,30 @@ JOIN book USING(author_id)
 JOIN buy_book USING(book_id)
 WHERE buy_id = 5
 ORDER BY title;
+
+
+CREATE TABLE buy_pay AS
+SELECT buy_id, sum(buy_book.amount) Количество, sum(book.price*buy_book.amount) Итого
+FROM buy JOIN buy_book USING(buy_id)
+JOIN book USING(book_id)
+WHERE buy_id = 5
+GROUP BY buy_id;
+
+
+INSERT INTO buy_step(buy_id, step_id)
+SELECT buy_id, step_id
+FROM (SELECT * FROM buy CROSS JOIN step
+WHERE buy_id = 5) q;
+
+
+UPDATE buy_step JOIN step USING(step_id)
+SET date_step_beg = '2020-04-12'
+WHERE buy_id = 5 AND name_step = 'Оплата';
+
+
+UPDATE buy_step JOIN step USING(step_id)
+SET date_step_end = '2020-04-13'
+WHERE buy_id = 5 AND name_step = 'Оплата';
+UPDATE buy_step JOIN step USING(step_id)
+SET date_step_beg = '2020-04-13'
+WHERE buy_id = 5 AND name_step = 'Упаковка';
