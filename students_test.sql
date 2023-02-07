@@ -65,12 +65,12 @@ ORDER BY name_student, date_attempt DESC;
 
 
 SELECT name_subject,
-LEFT(name_question, 8) Вопрос,
-count(is_correct) Всего_ответов,
-count(is_correct)/count(answer_id) Успешность
-FROM subject
-JOIN question USING(subject_id)
+CONCAT(LEFT(name_question, 30), '...') Вопрос,
+count(testing_id) Всего_ответов,
+ROUND(sum(is_correct)/count(testing_id)*100, 2) Успешность
+FROM question
 JOIN testing USING(question_id)
-JOIN answer USING(question_id)
-WHERE is_correct = 1
+JOIN answer USING(answer_id)
+JOIN subject USING(subject_id)
 GROUP BY name_subject, Вопрос
+ORDER BY name_subject, Успешность DESC, Вопрос;
