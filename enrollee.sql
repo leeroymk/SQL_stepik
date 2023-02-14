@@ -50,6 +50,7 @@ JOIN program_enrollee USING(program_id)
 GROUP BY program_id
 ORDER BY Конкурс DESC;
 
+
 SELECT name_program
 FROM program JOIN program_subject USING(program_id)
 JOIN subject USING(subject_id)
@@ -57,3 +58,14 @@ WHERE name_subject IN ('Математика', 'Информатика')
 GROUP BY name_program
 HAVING count(name_subject) = 2
 ORDER BY name_program;
+
+
+SELECT name_program, name_enrollee, sum(result) itog
+FROM enrollee JOIN program_enrollee USING(enrollee_id)
+JOIN program USING(program_id)
+JOIN program_subject USING(program_id)
+JOIN subject USING(subject_id)
+JOIN enrollee_subject USING(enrollee_id, subject_id)
+GROUP BY 1, 2
+ORDER BY 1, 3 DESC
+;
